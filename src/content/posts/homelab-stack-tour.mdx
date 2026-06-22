@@ -1,0 +1,89 @@
+---
+title: "My Homelab Stack: 15 Services Running on a Single Proxmox Node"
+description: "A tour of my self-hosted homelab — Docker, Traefik, media automation, monitoring, and how I keep it all running smoothly with Ansible."
+date: "2026-06-08"
+tags: [Homelab, Self-Hosted, Docker, Ansible, Proxmox]
+author: James
+---
+
+## The Hardware
+
+It all runs on a single Proxmox host with these specs:
+
+- **CPU**: Intel i7-10700 (8 cores / 16 threads)
+- **RAM**: 64GB DDR4
+- **Storage**: 2TB NVMe + 4TB HDD for media
+- **Network**: 2.5GbE to the main switch
+
+Not a datacenter, but more than enough for a home lab that handles media, development, monitoring, and experimentation.
+
+## The Virtualization Layer
+
+Proxmox VE hosts everything. I use LXC containers for lightweight services and full VMs for anything that needs kernel isolation (Docker host, Kubernetes nodes, etc.):
+
+```bash
+# Quick LXC creation with my template
+pct create 200 \
+  local:vztmpl/ubuntu-24.04-standard.tar.gz \
+  --hostname docker-host \
+  --storage local-lvm \
+  --cores 4 \
+  --memory 8192 \
+  --net0 name=eth0,bridge=vmbr0,ip=dhcp
+```
+
+## The Docker Stack
+
+This is where most services live. I use Docker Compose with a modular setup — each service group has its own `docker-compose.yml`:
+
+```yaml
+# docker-compose.yml snippet — media stack
+services:
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    volumes:
+      - ./radarr/config:/config
+      - /mnt/media/movies:/movies
+      - /mnt/downloads:/downloads
+    ports:
+      - "7878:7878"
+    restart: unless-stopped
+```
+
+### Services I Run
+
+| Category | Services |
+|----------|----------|
+| **Media** | Radarr, Sonarr, Prowlarr, Jellyfin, qBittorrent |
+| **Infrastructure** | Traefik (reverse proxy), Pi-hole (DNS/ad blocking), Watchtower (auto-updates) |
+| **Monitoring** | Prometheus, Grafana, Uptime Kuma |
+| **Dev Tools** | Gitea, Portainer, VS Code Server |
+| **Misc** | Home Assistant, Paperless-ngx |
+
+## Ansible Keeps It All in Check
+
+I use Ansible to manage configuration drift. My [branconet-homelab](https://github.com/jtmb/branconet-homelab) repo is the single source of truth for the entire stack. A single playbook can:
+
+```yaml
+# ansible-playbook site.yml --tags docker,traefik
+- hosts: docker_hosts
+  roles:
+    - docker-install
+    - traefik-config
+    - media-stack
+    - monitoring
+```
+
+## Lessons Learned
+
+1. **Document everything**: When you self-host 15 services, you'll forget how you configured half of them in 3 months.
+2. **Backups are not optional**: I use [ez-backups](https://github.com/jtmb/ez-backups) to snapshot Docker volumes daily.
+3. **Use a reverse proxy from day one**: Traefik with Let's Encrypt makes adding new services trivial — just add labels.
+4. **Monitor before you need it**: Grafana dashboards are nice, but Uptime Kuma alerts have saved me more times than I can count.
+
+> **The best homelab is the one you actually maintain.** Start small, add one service at a time, and automate everything you can.

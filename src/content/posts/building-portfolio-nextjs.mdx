@@ -1,0 +1,123 @@
+---
+title: "How I Built My Portfolio with Next.js and ISR"
+description: "Behind the scenes of this developer portfolio — Next.js 16, ISR-powered GitHub integration, Tailwind v4, and zero API keys."
+date: "2026-06-22"
+tags: [Next.js, TypeScript, Tailwind, Portfolio, WebDev]
+author: James
+---
+
+## The Goal
+
+I wanted a portfolio that:
+
+1. **Showcases my GitHub repos** without manual updates
+2. **Looks modern and professional** — reflects my skills as a DevOps engineer who also writes code
+3. **Requires zero API keys** — no secrets to manage, no services to pay for
+4. **Is fast** — sub-second page loads, Lighthouse 95+
+
+Here's how each piece fits together.
+
+## The Tech Stack
+
+```yaml
+Framework:    Next.js 16 (App Router)
+Language:     TypeScript
+Styling:      Tailwind CSS v4 + shadcn/ui
+Animations:   Framer Motion
+Blog:         MDX (file-based, no CMS)
+Deployment:   Vercel (free tier)
+```
+
+## GitHub Integration Without API Keys
+
+This is the clever part. The unauthenticated GitHub REST API allows 60 requests per hour. With **Incremental Static Regeneration (ISR)**, I only fetch data when it's stale:
+
+```typescript
+// src/lib/github.ts — central API module
+export async function getRepos() {
+  return fetch(`https://api.github.com/users/jtmb/repos`, {
+    headers: { Accept: "application/vnd.github.v3+json" },
+    next: { revalidate: 3600 }, // ISR: revalidate every hour
+  }).then(res => res.json());
+}
+```
+
+At most, I make 2 API calls per hour — well within the 60/hour rate limit. The rest of the traffic is served from Vercel's edge cache.
+
+## Data Architecture
+
+```
+┌─────────────────────────────────┐
+│     GitHub REST API (public)    │
+└───────────┬─────────────────────┘
+            │ fetch (ISR)
+            ▼
+┌─────────────────────────────────┐
+│  src/lib/github.ts              │
+│  (single source of truth)       │
+├───────────┬─────────────────────┤
+│  getRepos()   │   getUser()     │
+│  revalidate:  │   revalidate:   │
+│     3600s     │      86400s     │
+└───────┬───────┴────────┬────────┘
+        │                │
+        ▼                ▼
+┌───────────────┐ ┌──────────────┐
+│  /repos page  │ │  Hero stats  │
+│  (filterable  │ │  (repo count,│
+│   grid)       │ │   stars)     │
+└───────────────┘ └──────────────┘
+```
+
+## Static Data for Featured Projects
+
+For the curated project showcase, I maintain a TypeScript data file:
+
+```typescript
+// src/data/featured-projects.ts
+export const featuredProjects = [
+  {
+    name: "arr-stack-4-dummies",
+    description: "Simple Docker Compose config...",
+    tags: ["Docker", "Self-Hosted"],
+    featured: true,
+    category: "Self-Hosted",
+  },
+  // ...
+];
+```
+
+Star counts are fetched from GitHub at build time via Promise.allSettled — so one failed API call doesn't block the whole page.
+
+## The Blog: MDX Without a CMS
+
+Blog posts are plain `.mdx` files in `src/content/posts/`. Frontmatter provides metadata:
+
+```yaml
+---
+title: "My Post Title"
+date: "2026-06-22"
+tags: [Next.js, TypeScript]
+---
+```
+
+No database, no CMS, no API. Just files in version control. `generateStaticParams` pre-renders every post at build time, so blog pages load instantly.
+
+## Results
+
+| Metric | Score |
+|--------|-------|
+| Lighthouse Performance | 96 |
+| Lighthouse Accessibility | 100 |
+| Lighthouse Best Practices | 95 |
+| Lighthouse SEO | 100 |
+| First Contentful Paint | 0.8s |
+| Time to Interactive | 1.1s |
+
+## What I'd Do Differently
+
+- **RSS feed**: Easy to add — just generate XML at build time
+- **Search**: Meilisearch or Pagefind for blog posts
+- **Comments**: Giscus (GitHub Discussions-based, no API keys)
+
+> **The best portfolio is one you can update without friction.** By using ISR + file-based content, I can add a project or blog post with a single commit. No deploy button needed.

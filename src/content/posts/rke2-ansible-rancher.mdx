@@ -1,0 +1,107 @@
+---
+title: "Setting Up an RKE2 Cluster with Ansible & Rancher"
+description: "A step-by-step guide to provisioning a production-ready RKE2 Kubernetes cluster with the Rancher UI, Let's Encrypt TLS, and Ansible automation."
+date: "2026-06-15"
+tags: [Kubernetes, RKE2, Ansible, Rancher, DevOps]
+author: James
+---
+
+## Why RKE2?
+
+RKE2 (Rancher Kubernetes Engine 2) is a CNCF-certified Kubernetes distribution designed with security as a first-class concern. Unlike RKE1, RKE2 is built on top of K3s architecture — meaning it's lightweight, passes CIS benchmarks by default, and works great for both homelab and production environments.
+
+When combined with Ansible for automation and the Rancher UI for management, you can go from bare metal to a fully operational multi-node cluster in under 30 minutes.
+
+## The Stack
+
+Here's what we'll be deploying:
+
+```yaml
+# High-level stack overview
+Infrastructure:
+  - 3 control-plane nodes running RKE2 server
+  - 2+ worker nodes running RKE2 agent
+  - Rancher UI deployed via Helm on the cluster itself
+
+Automation:
+  - Ansible playbooks for initial node provisioning
+  - Dynamic inventory based on your node list
+  - Let's Encrypt certificates via cert-manager
+```
+
+## Step 1: Prepare Your Nodes with Ansible
+
+Before installing RKE2, your nodes need some preparation. Here's a minimal Ansible role to get them ready:
+
+```yaml
+# roles/node-prep/tasks/main.yml
+- name: Update system packages
+  apt:
+    update_cache: yes
+    upgrade: dist
+
+- name: Install required packages
+  apt:
+    name:
+      - curl
+      - wget
+      - ca-certificates
+      - gnupg
+      - lsb-release
+    state: present
+
+- name: Disable swap (Kubernetes requirement)
+  command: swapoff -a
+  when: ansible_swaptotal_mb > 0
+
+- name: Load kernel modules
+  modprobe:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - overlay
+    - br_netfilter
+```
+
+## Step 2: Install RKE2 on Control-Plane Nodes
+
+The first control-plane node bootstraps the cluster. Subsequent nodes join the existing cluster:
+
+```bash
+# On the first control-plane node
+curl -sfL https://get.rke2.io | sh -
+systemctl enable rke2-server.service
+systemctl start rke2-server.service
+
+# Get the node token (needed for joining additional nodes)
+cat /var/lib/rancher/rke2/server/node-token
+```
+
+## Step 3: Install Rancher
+
+Once your RKE2 cluster is up, deploy Rancher via Helm:
+
+```bash
+helm repo add rancher-latest https://releases.rancher.com/server-charts/latest
+helm repo update
+
+helm install rancher rancher-latest/rancher \
+  --namespace cattle-system \
+  --create-namespace \
+  --set hostname=rancher.yourdomain.com \
+  --set ingress.tls.source=letsEncrypt \
+  --set letsEncrypt.email=you@example.com
+```
+
+## Wrapping Up
+
+After completing these steps, you'll have:
+
+- ✅ A 3-node HA Kubernetes control plane
+- ✅ Rancher UI with Let's Encrypt TLS
+- ✅ Ansible playbooks you can reuse for future clusters
+- ✅ A solid foundation for deploying workloads
+
+> **Pro tip**: Store your playbooks in a git repository. Every time you provision a new cluster, commit any changes back. Infrastructure as Code starts with version control.
+
+Check out my [ansible-rke2-rancher](https://github.com/jtmb/ansible-rke2-rancher) repo for the full playbook!
