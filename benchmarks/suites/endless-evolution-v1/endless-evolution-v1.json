@@ -1,0 +1,44 @@
+{
+  "suite": "endless-evolution-v1",
+  "description": "Self-directed evolutionary benchmark — the LLM autonomously analyzes the current project state, proposes its own features, implements them, and validates backward compatibility. No fixed task list. The suite runs indefinitely until externally stopped.",
+  "date": "2026-06-22",
+  "expected_minutes_per_feature": {
+    "analysis": 5,
+    "proposal": 3,
+    "implementation": 15,
+    "validation": 5
+  },
+  "stack": {
+    "framework": "Next.js 16 (App Router)",
+    "language": "TypeScript",
+    "styling": "Tailwind CSS",
+    "animation": "Framer Motion",
+    "icons": "lucide-react",
+    "utilities": "tailwind-merge, clsx",
+    "testing": "Vitest, Testing Library"
+  },
+  "design_principles": [
+    "Dark-first minimalist theme",
+    "Animations on transform/opacity only (GPU accelerated)",
+    "Generous whitespace, no clutter",
+    "Subtle micro-interactions",
+    "Fully responsive mobile-first",
+    "Backward compatible — never break existing features",
+    "Self-directed feature discovery",
+    "Progressive complexity — features should compound"
+  ],
+  "feature_constraints": {
+    "min_features_per_run": 3,
+    "max_consecutive_failures": 2,
+    "feature_diversity_required": true,
+    "validation_gate_required": true
+  },
+  "categories": [
+    "Self-Assessment",
+    "Feature Planning",
+    "Implementation",
+    "Validation",
+    "Documentation",
+    "Infrastructure"
+  ]
+}
