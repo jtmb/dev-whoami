@@ -28,10 +28,12 @@
     "Progressive complexity — features should compound"
   ],
   "feature_constraints": {
-    "min_features_per_run": 3,
+    "min_features_per_run": 6,
     "max_consecutive_failures": 2,
     "feature_diversity_required": true,
-    "validation_gate_required": true
+    "validation_gate_required": true,
+    "stop_gate_enabled": true,
+    "continuation_mandate": true
   },
   "categories": [
     "Self-Assessment",

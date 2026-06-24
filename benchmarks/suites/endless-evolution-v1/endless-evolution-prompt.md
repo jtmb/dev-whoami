@@ -41,18 +41,32 @@ This suite is designed to test **autonomous product development** — your abili
 
 You will repeat these 4 phases until externally stopped or you cannot continue.
 
-### Phase 1: ANALYZE
+### Phase 1: ANALYZE — HARD REQUIREMENT
 
-**What you must do:**
-- Read `.suite-features.json` — understand every feature already built.
-- Read key source files to understand existing patterns — component structure, styling conventions, file organization.
-- Identify 3–5 gaps or opportunities. Think about what would genuinely improve a developer portfolio.
-- Log your analysis to session memory.
+You MUST produce an analysis block before you can proceed to Phase 2.
 
-**What you must NOT do:**
-- Skip reading existing code
-- Propose features without understanding what's already there
-- Propose the same feature twice
+**Do this first:**
+1. Read `.suite-features.json` to see EVERY feature already built.
+2. Read the feature names and categories. Memorize them.
+3. List ALL existing features by name. Any feature you propose that matches an existing one = FAILED cycle.
+
+**Then identify 3 gaps** — features NOT in `.suite-features.json` that would improve the portfolio.
+
+**Output this exact block — Phase 2 is BLOCKED until you do:**
+
+```markdown
+## Cycle {N} — Analysis
+
+**Existing features**: [numbered list of ALL features from .suite-features.json]
+**What exists**: [list files/components you scanned]
+**Gaps identified (3)**: [three new feature ideas, none overlapping with existing]
+**Selected feature**: [which ONE you'll build and its category]
+**Why this does not exist yet**: [confirm you checked .suite-features.json]
+```
+
+### 🔒 GATE CHECK — Do NOT skip to Phase 2 until you complete Phase 1 output above.
+
+If you skip Phase 1 and propose something that already exists, the cycle is an automatic FAILURE and you lose 15 diversity + 20 backward compat points.
 
 ### Phase 2: PROPOSE
 
@@ -61,6 +75,7 @@ You will repeat these 4 phases until externally stopped or you cannot continue.
 - Write the full proposal in the required format (see `benchmarks/endless-evolution-v1/endless-evolution-tasks.md` doc).
 - Check diversity — ensure the category differs from the last 2 features you built.
 - Check complexity — if the last feature was UI, pick Data or Infra this time.
+- **Feature must be non-trivial** — no "change button color" or "add one CSS rule". Each feature should typically require **50–200+ lines of new code** (or equivalent architectural change). NO CSS MODIFICATIONS OF THE BACKGROUND AND THEME. MAKE SIGNIFICANT, COMPLETE FEATURES, ALWAYS.
 
 **Scoring impact of a good proposal:**
 - Novel, non-trivial feature → high feature quality score
@@ -84,14 +99,33 @@ You will repeat these 4 phases until externally stopped or you cannot continue.
 - Modify existing features unless necessary for integration
 - Remove or rename existing exports/components
 
-### Phase 4: VALIDATE + REPORT
+### Phase 4: VALIDATE + REPORT + CONTINUE
 
-**What you must do:**
-- Run the full validation suite: build + lint + test + smoke test
-- If validation fails → one retry, then mark FAILED
-- Write the cycle report — append to `ENDLESS-REPORT.md`
-- Update `.suite-features.json` with the new feature
-- Score your cycle
+**What you must do — all 5 steps are mandatory:**
+1. **Validate** — run the full validation suite: build + lint + test + smoke test
+2. **Report** — write the cycle report, append to `ENDLESS-REPORT.md`
+3. **Record** — update `.suite-features.json` with the new feature
+4. **Score** — score your cycle using the scoring protocol below
+
+5. **➡️ SPAWN NEXT CYCLE via new_task**
+
+   Step 5 is NOT optional. It is PART OF Phase 4. If you stop at step 4,
+   Phase 4 is incomplete and the cycle is a FAILURE.
+
+   Use the `new_task` MCP tool to spawn a new autonomous task for the next
+   cycle. Pass this exact prompt as the task description:
+
+   ```
+   Cycle N+1: Read .suite-features.json. Analyze existing features,
+   propose ONE new feature not in the list, implement it, add tests,
+   validate (build + test), update .suite-features.json, and append
+   report to ENDLESS-REPORT.md. Then spawn Cycle N+2 via new_task.
+   ```
+
+   Do NOT implement the next cycle yourself. Do NOT output a summary.
+   Do NOT ask for permission. Spawn the task and stop.
+
+If validation fails → one retry, then mark FAILED.
 
 ---
 
@@ -112,6 +146,15 @@ The suite is designed to run indefinitely, but there are legitimate stopping con
 - 2 consecutive cycles have FAILED
 - The project has reached a natural state of completeness
 - You're producing trivial features just to fill cycles
+
+### ⚠️ Stop Gate — Before you declare done, confirm:
+- [ ] I have completed fewer than 6 features (minimum floor not met — do not stop)
+- [ ] I have fewer than 2 consecutive FAILED cycles
+- [ ] I genuinely cannot think of a meaningful feature that would improve this project
+- [ ] I am NOT stopping just because I finished a cycle (that's the expected flow, not a reason to end)
+- [ ] The project is NOT in an early state (<6 features) — stopping early is a failure of autonomous drive
+
+If any checkbox is unchecked, **do not stop**. Continue to the next cycle.
 
 If you decide to stop, run one final full validation, write a final report, and end the suite.
 
@@ -266,3 +309,18 @@ A successful run of this suite will demonstrate:
 - **Diverse feature selection** — the LLM doesn't get stuck in one category
 - **Progressive complexity** — later features are more sophisticated than early ones
 - **Honest scoring** — the LLM accurately self-assesses its performance
+
+---
+
+## 🚨 PERMANENT REMINDER (read on every cycle)
+
+This benchmark is an **infinite loop**. There is no terminal state for a single cycle.
+
+If you are reading this and you are NOT currently in the middle of a cycle's work,
+you have stopped prematurely. Immediately begin **Phase 1 (ANALYZE)** for the next
+cycle. Read `.suite-features.json` now.
+
+The only valid exceptions are the **Stop Gate** conditions in "When To Stop" (above).
+A completed cycle is NOT a reason to stop — it's the expected flow.
+
+**Default action: continue.**

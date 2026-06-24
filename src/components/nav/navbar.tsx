@@ -6,24 +6,17 @@
  */
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
-import { Menu, Moon, Sun } from "lucide-react";
+import { useState } from "react";
+import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { GitHubIcon } from "@/components/shared/github-icon";
+import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { mainNavLinks } from "@/data/nav";
 
 export function Navbar() {
   const pathname = usePathname();
-  const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-
-  // Wait until mounted to avoid hydration mismatch with theme icon.
-  // This is the canonical next-themes pattern — mounted state is required.
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => setMounted(true), []);
 
   /** Check if a nav link is the current active route. */
   function isActive(href: string): boolean {
@@ -60,21 +53,8 @@ export function Navbar() {
 
         {/* Right side: theme toggle + GitHub + mobile menu */}
         <div className="flex items-center gap-2">
-          {/* Theme toggle — only render after mount to avoid flash */}
-          {mounted && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              aria-label="Toggle theme"
-            >
-              {theme === "dark" ? (
-                <Sun className="h-5 w-5" />
-              ) : (
-                <Moon className="h-5 w-5" />
-              )}
-            </Button>
-          )}
+          {/* Theme toggle — handles hydration mismatch internally */}
+          <ThemeToggle />
 
           {/* GitHub link */}
           <Button

@@ -7,6 +7,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Calendar, Clock } from "lucide-react";
+import { ScrollProgress } from "@/components/shared/scroll-progress";
+import { PostToc } from "@/components/blog/post-toc";
+import { RelatedPosts } from "@/components/blog/related-posts";
+import { PostShare } from "@/components/blog/post-share";
+import { extractHeadings } from "@/lib/blog-toc";
+import { extractTagsFromContent } from "@/lib/related-posts";
 import { SectionWrapper } from "@/components/shared/section-wrapper";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -70,13 +76,31 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     // Use default
   }
 
-  // Dynamically import the MDX file
-  const { default: PostContent } = await import(
+  // Dynamically import the MDX file and extract headings for TOC
+  const { default: PostContent, raw } = await import(
     `@/content/posts/${slug}.mdx`
   );
+  
+  // Extract headings from raw MDX content using shared utility
+  const headings = extractHeadings(raw);
+
+  // Extract tags from current post for related posts feature
+  const currentPostTags = extractTagsFromContent(raw);
 
   return (
-    <SectionWrapper>
+    <>
+      {/* Reading progress bar — fixed at top of viewport */}
+      <ScrollProgress />
+
+      {/* Table of Contents sidebar */}
+      {headings.length > 0 && <PostToc headings={headings} />}
+
+      {/* Related Posts section */}
+      {currentPostTags.length > 0 && (
+        <RelatedPosts currentPost={{ slug, tags: currentPostTags }} />
+      )}
+
+      <SectionWrapper>
       {/* Back button */}
       <div className="mb-8">
         <Button variant="ghost" size="sm" render={<Link href="/blog" />}>
@@ -119,7 +143,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         <div className="prose prose-neutral max-w-none dark:prose-invert prose-headings:scroll-mt-20 prose-code:rounded prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:text-sm prose-code:before:content-none prose-code:after:content-none prose-pre:border prose-pre:border-border">
           <PostContent />
         </div>
+
+        {/* Social share buttons */}
+        <PostShare title={post.title} slug={slug} />
       </article>
     </SectionWrapper>
+    </>
   );
 }

@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Providers } from "@/components/layout/providers";
 import { Navbar } from "@/components/nav/navbar";
 import { Footer } from "@/components/layout/footer";
+import { BackToTop } from "@/components/shared/back-to-top";
+import { AnimatedGradient } from "@/components/shared/animated-gradient";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -63,9 +65,11 @@ export default function RootLayout({
           Skip to content
         </a>
         <Providers>
+          <AnimatedGradient />
           <Navbar />
           <main id="main-content" className="flex-1">{children}</main>
           <Footer />
+          <BackToTop />
         </Providers>
       </body>
     </html>

@@ -5,8 +5,9 @@
  * Operates entirely on in-memory data (no extra API calls).
  * Debounced text input for smooth UX.
  */
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { Search, X } from "lucide-react";
+import { useKeyboardNav } from "@/hooks/use-keyboard-nav";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -25,6 +26,9 @@ export function RepoFilter({
   onFilteredChange,
   allLanguages,
 }: RepoFilterProps) {
+  const filterRef = useRef<HTMLDivElement>(null);
+  // Arrow-key navigation across language badges and sort buttons
+  useKeyboardNav(filterRef, { orientation: "horizontal", wrapAround: true });
   const [search, setSearch] = useState("");
   const [selectedLangs, setSelectedLangs] = useState<Set<string>>(new Set());
   const [sort, setSort] = useState<SortOption>("updated");
@@ -89,7 +93,7 @@ export function RepoFilter({
   const hasFilters = search.trim() || selectedLangs.size > 0;
 
   return (
-    <div className="space-y-4">
+    <div ref={filterRef} className="space-y-4" role="group" aria-label="Repository filters">
       {/* Search + sort row */}
       <div className="flex flex-col gap-3 sm:flex-row">
         <div className="relative flex-1">
@@ -137,8 +141,18 @@ export function RepoFilter({
           <Badge
             key={lang}
             variant={selectedLangs.has(lang) ? "default" : "outline"}
-            className="cursor-pointer transition-colors"
+            className="cursor-pointer transition-colors focus:ring-2 focus:ring-primary focus:outline-none"
+            tabIndex={0}
+            role="button"
+            aria-pressed={selectedLangs.has(lang)}
+            aria-label={`${selectedLangs.has(lang) ? 'Deselect' : 'Select'} ${lang} filter`}
             onClick={() => toggleLang(lang)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                toggleLang(lang);
+              }
+            }}
           >
             {lang}
           </Badge>
@@ -148,6 +162,8 @@ export function RepoFilter({
             variant="ghost"
             size="sm"
             className="text-xs text-muted-foreground"
+            tabIndex={0}
+            aria-label="Clear all filters"
             onClick={clearFilters}
           >
             <X className="mr-1 h-3 w-3" />
@@ -175,8 +191,12 @@ function SortButton({
     <Button
       variant={current === value ? "secondary" : "ghost"}
       size="sm"
+      tabIndex={0}
+      role="menuitemradio"
+      aria-checked={current === value}
+      aria-label={`Sort by ${label.toLowerCase()}`}
       onClick={() => onClick(value)}
-      className="text-xs"
+      className="text-xs focus:ring-2 focus:ring-primary focus:outline-none"
     >
       {label}
     </Button>

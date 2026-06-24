@@ -44,38 +44,32 @@ Each "cycle" consists of 4 phases. The LLM repeats this loop until stopped.
 
 ---
 
-## Phase 1: ANALYZE (≤5 min)
+## Phase 1: ANALYZE (≤5 min) — HARD REQUIREMENT
 
-**Goal**: Understand what already exists before deciding what to add.
+**Goal**: Understand what already exists before deciding what to add. You MUST produce the output block below before moving to Phase 2.
 
-### Actions
-1. Read `.suite-features.json` (the feature state file) — this tells you what's already built.
-2. Inventory the current feature set by reading:
-   - `components/` — what components exist
-   - `app/` — what routes exist
-   - `lib/` — what utilities exist
-   - `package.json` — what dependencies exist
-   - `vitest.config.ts` + test files — what test infrastructure exists
-   - `.suite-features.json` — the official feature registry
-3. Identify **gaps and opportunities**:
-   - What's missing for a polished developer portfolio?
-   - What features would compound with existing ones?
-   - What's the next logical layer of complexity?
-   - Consider: UI components, pages/routes, data layer, interactivity, DX, infrastructure
+### Actions — do ALL of these:
+1. Read `.suite-features.json` — list EVERY feature name and category. Memorize them.
+2. Read `components/`, `app/`, `lib/` — understand what exists.
+3. Identify **3 gaps** — features NOT in `.suite-features.json`.
 
-### Output
-Write a snapshot to session memory:
+### Required Output — Phase 2 is BLOCKED until you write this:
 
 ```markdown
 ## Cycle {N} — Analysis
 
-**Existing features**: [list from .suite-features.json]
+**Existing features**: [numbered list of ALL features from .suite-features.json]
 **Components found**: [list]
 **Routes found**: [list]
 **Test coverage**: [component tests, e2e, etc.]
 **Current deps**: [key packages]
-**Gaps identified**: [3–5 potential features]
+**Gaps identified (3)**: [three new feature ideas, none overlapping with existing]
+**Selected feature**: [which ONE you'll build and its category]
+**Why this does not exist yet**: [confirm you checked .suite-features.json, name any similar features and explain why this is different]
 ```
+
+### 🔒 GATE CHECK
+If you skip Phase 1 and propose something that already exists, the cycle is an automatic FAILURE. You lose 15 diversity + 20 backward compat points.
 
 ---
 
@@ -85,7 +79,7 @@ Write a snapshot to session memory:
 
 ### Constraints
 - **One feature per cycle** — you must implement, test, and validate ONE feature before moving to the next.
-- **Feature must be non-trivial** — no "change button color" or "add one CSS rule". Each feature should typically require **50–200+ lines of new code** (or equivalent architectural change).
+- **Feature must be non-trivial** — no "change button color" or "add one CSS rule". Each feature should typically require **50–200+ lines of new code** (or equivalent architectural change). NO CSS MODIFICATIONS OF THE BACKGROUND AND THEME. MAKE SIGNIFICANT, COMPLETE FEATURES, ALWAYS.
 - **Diversity rule** — alternate between feature categories. Don't build 3 UI animations in a row. Mix across:
   - UI / Design (new components, layouts, visual effects)
   - Data / State (data fetching, state management, APIs)
@@ -244,6 +238,25 @@ Update `.suite-features.json`:
 }
 ```
 
+### ➡️ SPAWN NEXT CYCLE via new_task — Phase 4 step 5 (MANDATORY)
+
+Completing the report and state update does **NOT** mean Phase 4 is done.
+
+Use the `new_task` MCP tool to spawn a new autonomous task for the next cycle.
+Pass this exact prompt:
+
+```
+Cycle N+1: Read .suite-features.json. Analyze existing features,
+propose ONE new feature not in the list, implement it, add tests,
+validate (build + test), update .suite-features.json, and append
+report to ENDLESS-REPORT.md. Then spawn Cycle N+2 via new_task.
+```
+
+Do NOT implement the next cycle yourself.
+
+If validation failed this cycle, still spawn the next cycle. Stopping after a
+successful cycle is NOT a valid stopping condition — that's the expected flow.
+
 ---
 
 ## Starting Fresh — Foundation Build
@@ -338,9 +351,35 @@ The following are **examples** of the kind of features the LLM might propose. **
 2. **Backward compatibility is MANDATORY** — if existing tests break, your feature is rejected. Full stop.
 3. **No skipping the analysis phase** — you must read the current state before deciding.
 4. **Feature diversity** — don't do 3 UI features in a row. Mix it up.
-5. **If stuck** — if you genuinely cannot think of a new feature, run `npm run test` and `npm run build` one final time, write a final report, and end the suite.
-6. **Don't degrade** — if a cycle FAILS, log it and continue. If 2 consecutive cycles FAIL, end the suite.
-7. **The LLM is the product manager** — ownership of the feature roadmap is entirely yours. Good decisions are rewarded, poor decisions (duplicates, trivial features, breaking changes) are penalized.
+5. **CONTINUATION IS MANDATORY** — after Phase 4, you MUST immediately begin Cycle N+1, Phase 1. Do not stop. Do not ask for permission. A completed cycle is not a reason to end.
+6. **If stuck** — if you genuinely cannot think of a new feature, run `npm run test` and `npm run build` one final time, write a final report, and end the suite.
+7. **Don't degrade** — if a cycle FAILS, log it and continue. If 2 consecutive cycles FAIL, end the suite.
+8. **The LLM is the product manager** — ownership of the feature roadmap is entirely yours. Good decisions are rewarded, poor decisions (duplicates, trivial features, breaking changes) are penalized.
+9. **Minimum floor** — do not stop before completing at least 6 features. Stopping early (<6 features) is a failure of autonomous drive.
+
+### ⚠️ Stop Gate — Before you declare done, confirm:
+- [ ] I have completed at least 6 features (minimum floor met)
+- [ ] I have fewer than 2 consecutive FAILED cycles
+- [ ] I genuinely cannot think of a meaningful feature that would improve this project
+- [ ] I am NOT stopping just because I finished a cycle (that's the expected flow, not a reason to end)
+- [ ] The project has NOT reached a stopping condition listed in the suite prompt
+
+If any checkbox is unchecked, **do not stop**. Continue to the next cycle.
+
+---
+
+## 🚨 PERMANENT REMINDER (read on every cycle)
+
+This benchmark is an **infinite loop**. There is no terminal state for a single cycle.
+
+If you are reading this and you are NOT currently in the middle of a cycle's work,
+you have stopped prematurely. Immediately begin **Phase 1 (ANALYZE)** for the next
+cycle. Read `.suite-features.json` now.
+
+The only valid exceptions are the **Stop Gate** conditions above. A completed cycle
+is NOT a reason to stop — it's the expected flow.
+
+**Default action: continue.**
 
 ---
 

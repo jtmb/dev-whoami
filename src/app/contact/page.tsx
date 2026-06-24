@@ -1,6 +1,6 @@
 /**
  * Contact page — links and ways to reach out.
- * Static page with GitHub profile, email link, and optional form.
+ * Includes channel cards (GitHub, Portfolio, Email) plus a submission form.
  */
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -11,6 +11,7 @@ import { GradientText } from "@/components/shared/gradient-text";
 import { GitHubIcon } from "@/components/shared/github-icon";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ContactForm } from "@/components/contact/contact-form";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -21,6 +22,7 @@ export const metadata: Metadata = {
 export default function ContactPage() {
   return (
     <SectionWrapper>
+      {/* Header */}
       <AnimatedReveal>
         <h1 className="text-center text-3xl font-bold tracking-tight sm:text-4xl">
           <GradientText>Get in Touch</GradientText>
@@ -31,6 +33,7 @@ export default function ContactPage() {
         </p>
       </AnimatedReveal>
 
+      {/* Channel Cards */}
       <div className="mx-auto mt-12 grid max-w-2xl gap-6 sm:grid-cols-3">
         {/* GitHub */}
         <AnimatedReveal delay={0}>
@@ -93,7 +96,7 @@ export default function ContactPage() {
             </CardHeader>
             <CardContent>
               <p className="mb-4 text-sm text-muted-foreground">
-                Prefer email? Reach out and I&apos;ll get back to you.
+                Prefer email? Reach out and I'll get back to you.
               </p>
               <Button
                 variant="outline"
@@ -106,6 +109,21 @@ export default function ContactPage() {
           </Card>
         </AnimatedReveal>
       </div>
+
+      {/* Contact Form */}
+      <AnimatedReveal delay={0.3}>
+        <div className="mx-auto mt-16 max-w-xl">
+          <h2 className="text-center text-xl font-semibold tracking-tight">
+            Send a Message
+          </h2>
+          <p className="mx-auto mt-2 max-w-lg text-center text-sm text-muted-foreground">
+            Fill out the form below and I'll get back to you as soon as possible.
+          </p>
+        </div>
+        <div className="mx-auto mt-6 max-w-xl">
+          <ContactForm />
+        </div>
+      </AnimatedReveal>
     </SectionWrapper>
   );
 }

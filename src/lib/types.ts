@@ -47,6 +47,7 @@ export interface FeaturedProject {
   stars?: number; // Filled at build time via ISR
   featured: boolean;
   category: ProjectCategory;
+  image?: string; // Optional screenshot/image for visual differentiation
 }
 
 export type ProjectCategory = "DevOps" | "Self-Hosted" | "Automation" | "Gaming" | "AI" | "Web";

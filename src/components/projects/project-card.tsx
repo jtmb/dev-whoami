@@ -1,6 +1,7 @@
 /**
  * Featured project card — displays a curated project with description,
  * tech tags, star count, and GitHub link. Used on the /projects page.
+ * Supports optional project image for visual differentiation.
  */
 import { ExternalLink, Star } from "lucide-react";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,7 +18,19 @@ interface ProjectCardProps {
 export function ProjectCard({ project, stars }: ProjectCardProps) {
   return (
     <Card className="group flex flex-col transition-all hover:border-primary/50 hover:shadow-md">
-      <CardHeader>
+      {/* Optional image section */}
+      {project.image && (
+        <div className="relative h-48 w-full overflow-hidden bg-muted">
+          <img
+            src={project.image}
+            alt={`${project.name} screenshot`}
+            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            loading="lazy"
+          />
+        </div>
+      )}
+
+      <CardHeader className={project.image ? "pt-4" : ""}>
         <div className="flex items-start justify-between gap-2">
           <CardTitle className="text-lg font-semibold">
             <a
@@ -38,7 +51,7 @@ export function ProjectCard({ project, stars }: ProjectCardProps) {
           )}
         </div>
       </CardHeader>
-      <CardContent className="flex-1">
+      <CardContent className={project.image ? "flex-1" : ""}>
         <p className="text-sm leading-relaxed text-muted-foreground">
           {project.description}
         </p>
@@ -51,7 +64,7 @@ export function ProjectCard({ project, stars }: ProjectCardProps) {
           ))}
         </div>
       </CardContent>
-      <CardFooter className="flex gap-2">
+      <CardFooter className={project.image ? "pt-4" : ""}>
         <Button
           variant="outline"
           size="sm"

@@ -43,6 +43,13 @@ export function parseFrontmatter(raw: string): {
     const key = kvMatch[1].trim();
     let value: string | string[] = kvMatch[2].trim();
 
+    // Strip surrounding quotes from scalar values (YAML allows quoted strings)
+    if (value.startsWith('"') && value.endsWith('"')) {
+        value = value.slice(1, -1);
+    } else if (value.startsWith("'") && value.endsWith("'")) {
+        value = value.slice(1, -1);
+    }
+
     // Parse arrays: [tag1, tag2, tag3]
     if (value.startsWith("[") && value.endsWith("]")) {
       const inner = value.slice(1, -1);

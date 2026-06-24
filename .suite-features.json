@@ -1,0 +1,251 @@
+{
+  "suite": "endless-evolution-v1",
+  "totalCycles": 15,
+  "features": [
+    {
+      "id": "FEATURE-1",
+      "name": "Vitest Test Infrastructure",
+      "category": "Infra",
+      "status": "SUCCESS",
+      "cycle": 1,
+      "files": [
+        "vitest.config.ts",
+        "tests/setup.ts",
+        "tests/tsconfig.json",
+        "tests/hero-section.test.tsx"
+      ],
+      "description": "Set up Vitest + React Testing Library test framework with jsdom environment. Added baseline component tests for Hero section (10 tests). Configured path aliases, mock providers for framer-motion and next/link, and localStorage/matchMedia mocks.",
+      "testCount": 10,
+      "linesAdded": 95
+    },
+    {
+      "id": "FEATURE-2",
+      "name": "Scroll Progress Indicator",
+      "category": "UI",
+      "status": "SUCCESS",
+      "cycle": 2,
+      "files": [
+        "src/components/shared/scroll-progress.tsx",
+        "tests/scroll-progress.test.tsx"
+      ],
+      "description": "Fixed-position progress bar at viewport top that fills proportionally as user scrolls. Integrated into blog post pages for reading progress tracking. Uses framer-motion for smooth transitions, respects prefers-reduced-motion with static fallback.",
+      "testCount": 9,
+      "linesAdded": 105
+    },
+    {
+      "id": "FEATURE-3",
+      "name": "Blog Tag Filtering + Search",
+      "category": "Data",
+      "status": "SUCCESS",
+      "cycle": 3,
+      "files": [
+        "src/components/blog/post-filters.tsx",
+        "src/components/blog/blog-list-client.tsx",
+        "src/app/blog/page.tsx",
+        "src/lib/utils.ts",
+        "tests/post-filters.test.tsx"
+      ],
+      "description": "Client-side blog post filtering with search input and clickable tag badges. Search matches against title and description (case-insensitive). Tag filters use AND logic — posts must have ALL selected tags. Combined search + tag filtering supported. Clear filters button resets all state. Extracted formatDate to utils.ts for Client Component safety.",
+      "testCount": 15,
+      "linesAdded": 280
+    },
+    {
+      "id": "FEATURE-4",
+      "name": "Contact Form with API Route",
+      "category": "Infra",
+      "status": "SUCCESS",
+      "cycle": 4,
+      "files": [
+        "src/app/api/contact/route.ts",
+        "src/components/contact/contact-form.tsx",
+        "src/app/contact/page.tsx",
+        "tests/contact-form.test.tsx"
+      ],
+      "description": "Functional contact form with server-side Zod validation, spam detection, and proper HTTP status codes (200/403/422/500). Client Component handles submission states (idle/loading/success/error) with field-level error display. API route validates inputs via Zod schema, rejects known spam patterns, and returns structured error responses following the API design conventions.",
+      "testCount": 10,
+      "linesAdded": 235
+    },
+    {
+      "id": "FEATURE-5",
+      "name": "Back-to-Top Button",
+      "category": "UI",
+      "status": "SUCCESS",
+      "cycle": 5,
+      "files": [
+        "src/components/shared/back-to-top.tsx",
+        "src/app/layout.tsx",
+        "tests/back-to-top.test.tsx"
+      ],
+      "description": "Floating button that appears after scrolling past 300px threshold. Clicking smoothly scrolls back to top of page. Uses framer-motion for entrance/exit animations, respects prefers-reduced-motion with instant scroll fallback. Site-wide integration via layout component.",
+      "testCount": 10,
+      "linesAdded": 95
+    },
+    {
+      "id": "FEATURE-6",
+      "name": "Project Cards Image Support",
+      "category": "Data",
+      "status": "SUCCESS",
+      "cycle": 6,
+      "files": [
+        "src/components/projects/project-card.tsx",
+        "src/lib/types.ts",
+        "tests/project-card.test.tsx"
+      ],
+      "description": "Added optional image support to project cards for visual differentiation. Cards now conditionally render an image section when project.image is provided, with lazy loading and hover-scale effects. Updated FeaturedProject type with optional image field. Image appears above content with proper spacing adjustments.",
+      "testCount": 13,
+      "linesAdded": 65
+    },
+    {
+      "id": "FEATURE-7",
+      "name": "SEO Infrastructure (Sitemap + Robots)",
+      "category": "Infra",
+      "status": "SUCCESS",
+      "cycle": 7,
+      "files": [
+        "public/sitemap.xml",
+        "public/robots.txt",
+        "tests/sitemap.test.tsx"
+      ],
+      "description": "Added XML sitemap with all portfolio routes and priority weights. Added robots.txt allowing all crawlers with sitemap reference. 16 tests validate structure, content, and SEO correctness.",
+      "testCount": 16,
+      "linesAdded": 45
+    },
+    {
+      "id": "FEATURE-8",
+      "name": "Blog Table of Contents",
+      "category": "Data",
+      "status": "SUCCESS",
+      "cycle": 8,
+      "files": [
+        "src/components/blog/post-toc.tsx",
+        "src/lib/blog-toc.ts",
+        "tests/post-toc.test.tsx",
+        "src/app/blog/[slug]/page.tsx"
+      ],
+      "description": "Sticky sidebar Table of Contents component that auto-generates from blog post MDX headings. Parses ## and ### headings, renders nested clickable list with proper indentation, highlights currently visible section via IntersectionObserver. Responsive: sticky sidebar on desktop (right side), collapsible section on mobile. Module-level extractHeadings utility works in both Server and Client contexts.",
+      "testCount": 37,
+      "linesAdded": 250
+    },
+    {
+      "id": "FEATURE-9",
+      "name": "Related Posts Section",
+      "category": "Content",
+      "status": "SUCCESS",
+      "cycle": 9,
+      "files": [
+        "src/components/blog/related-posts.tsx",
+        "src/lib/related-posts.ts",
+        "tests/related-posts.test.tsx",
+        "src/app/blog/[slug]/page.tsx"
+      ],
+      "description": "Related posts recommendation section at the bottom of blog post pages. Uses tag-based similarity to find and display up to 5 related posts, sorted by shared tag count then newest date. Module-level extractTagsFromContent utility parses tags from MDX frontmatter for Server/Client compatibility. Component renders a responsive grid with title, date, shared tag badges, and overlap indicators.",
+      "testCount": 21,
+      "linesAdded": 180
+    },
+    {
+      "id": "FEATURE-10",
+      "name": "Accessibility Audit Tests",
+      "category": "Testing",
+      "status": "SUCCESS",
+      "cycle": 10,
+      "files": [
+        "tests/a11y-test-utils.ts",
+        "tests/accessibility.test.tsx",
+        "tests/animated-gradient.test.tsx",
+        "src/components/shared/animated-gradient.tsx",
+        "src/app/globals.css"
+      ],
+      "description": "Automated accessibility audit layer using axe-core. Tests validate WCAG compliance across all major components: Hero, Navbar, Footer, Blog list, Contact form, Project cards, Repo grid, Scroll progress, Back-to-top, and Star field background. Shared a11y-test-utils module provides renderWithAxe() helper that auto-detects theme for accurate color contrast checks. Bonus refactor: replaced purple gradient background with 80-star particle system matching deep-dark design system (#0a0a0f).",
+      "testCount": 50,
+      "linesAdded": 350
+    },
+    {
+      "id": "FEATURE-11",
+      "name": "Keyboard Navigation Support",
+      "category": "Accessibility",
+      "status": "SUCCESS",
+      "cycle": 11,
+      "files": [
+        "src/hooks/use-keyboard-nav.ts",
+        "src/components/repos/repo-filter.tsx",
+        "src/components/blog/post-toc.tsx",
+        "tests/keyboard-nav.test.tsx"
+      ],
+      "description": "Reusable keyboard navigation hook (useKeyboardNav) enabling arrow key traversal between focusable items within a container. Supports vertical/horizontal orientation, optional wrap-around, Home/End keys, and configurable item selectors. Integrated into repo filter badges/sort buttons (horizontal roving tabindex) and blog TOC links (vertical arrow nav). 10 tests validate all navigation patterns.",
+      "testCount": 10,
+      "linesAdded": 230
+    },
+    {
+      "id": "FEATURE-12",
+      "name": "Theme Toggle UI Component",
+      "category": "UI",
+      "status": "SUCCESS",
+      "cycle": 12,
+      "files": [
+        "src/components/shared/theme-toggle.tsx",
+        "src/components/nav/navbar.tsx",
+        "tests/theme-toggle.test.tsx"
+      ],
+      "description": "Reusable theme toggle component with animated sun/moon icons and smooth framer-motion transitions. Hydration-safe via mounted state pattern (canonical next-themes approach). Integrated into navbar replacing inline toggle button. Proper accessibility attributes (aria-label, role=button) and keyboard activation support. 11 tests cover dark/light switching, icon visibility, ARIA attributes, and hydration handling.",
+      "testCount": 11,
+      "linesAdded": 180
+    },
+    {
+      "id": "FEATURE-13",
+      "name": "RSS Feed (Atom) for Blog Posts",
+      "category": "Infra",
+      "status": "SUCCESS",
+      "cycle": 13,
+      "files": [
+        "src/app/api/rss/route.ts",
+        "tests/rss-feed.test.tsx",
+        "public/robots.txt"
+      ],
+      "description": "Atom/RSS feed endpoint at /api/rss generating XML from blog posts. Implements proper XML escaping for special characters (&, <, >, quotes), Atom namespace compliance, and structured entry generation with titles, links, dates, authors, and content summaries. Feed is discoverable via robots.txt sitemap reference. 21 tests cover XML escaping, feed structure, entry generation, character safety, and integration with getAllPosts.",
+      "testCount": 21,
+      "linesAdded": 200
+    },
+    {
+      "id": "FEATURE-14",
+      "name": "Interactive Skills Filter",
+      "category": "UI",
+      "status": "SUCCESS",
+      "cycle": 14,
+      "files": [
+        "src/components/hero/skills-filter.tsx",
+        "src/components/hero/skills-filter-client.tsx",
+        "src/components/hero/about-section.tsx",
+        "tests/skills-filter.test.tsx"
+      ],
+      "description": "Interactive skills filtering UI for the About section. Server Component (SkillsFilter) provides search input, category filter badges with keyboard navigation, result count display, and clear filters button. Client Component (SkillsFilterClient) manages state and delegates rendering to the Server Component pattern. Lucide icon mapping renders appropriate icons per skill. Proficiency displayed as filled/empty star indicators. 10 tests cover all filtering modes, toggle behavior, accessibility, and edge cases.",
+      "testCount": 10,
+      "linesAdded": 285
+    },
+    {
+      "id": "FEATURE-15",
+      "name": "Social Share Buttons for Blog Posts",
+      "category": "Content",
+      "status": "SUCCESS",
+      "cycle": 15,
+      "files": [
+        "src/components/blog/post-share.tsx",
+        "tests/post-share.test.tsx",
+        "src/app/blog/[slug]/page.tsx"
+      ],
+      "description": "SSR-safe social sharing component for blog posts. Renders share buttons for X (Twitter), LinkedIn, and clipboard copy with proper URL encoding. Copy-to-clipboard uses navigator.clipboard API with 'Copied!' feedback that auto-resets after 2 seconds. All share links open in new tabs with noopener/noreferrer attributes. Full accessibility support via aria-labels on every button.",
+      "testCount": 11,
+      "linesAdded": 140
+    }
+  ],
+  "failedCycles": [],
+  "lastCycleDate": "2026-06-24T12:36:00-04:00",
+  "cumulativeScores": {
+    "cycleScores": [78, 79, 84, 82, 85, 83, 85, 89, 73, 78, 81, 83, 77, 80, 82],
+    "averageScore": 80.8
+  },
+  "cumulativeTokens": {
+    "input": 460000,
+    "output": 300000,
+    "total": 760000
+  }
+}

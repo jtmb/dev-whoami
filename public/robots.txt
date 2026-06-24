@@ -1,0 +1,6 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+Sitemap: https://jtmb.dev/sitemap.xml
+# Atom/RSS feed for blog posts
+Sitemap: https://jtmb.dev/api/rss
