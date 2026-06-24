@@ -8,7 +8,7 @@
  * Pattern: mirrors PostFilters (blog tag filtering) but adapted for skill data —
  * filters by category tabs instead of tags, with optional text search.
  */
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Search, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -64,10 +64,9 @@ export function SkillsFilter({ skills, onFilterChange }: SkillsFilterProps) {
   }, [skills, searchQuery, activeCategories]);
 
   // Notify parent component of filtered results via callback.
-  useMemo(() => {
+  useEffect(() => {
     const names = new Set(filteredSkills.map((s) => s.name));
     onFilterChange(names);
-    return names;
   }, [filteredSkills, onFilterChange]);
 
   /** Toggle a category filter — adds if inactive, removes if active. */
